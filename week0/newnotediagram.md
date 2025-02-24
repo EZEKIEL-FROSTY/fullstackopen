@@ -14,16 +14,12 @@ sequenceDiagram
 
     browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
     activate server
-    server->>browser: Response
-
-    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
-    activate server
-    server-->>browser: the CSS file
+    server->>browser: Server responds with status code 302 and url redirect
     deactivate server
 
-    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.js
+    browser->>server: GET redirected url
     activate server
-    server-->>browser: the JavaScript file
+    server->>browser: HTML Document
     deactivate server
 
 
