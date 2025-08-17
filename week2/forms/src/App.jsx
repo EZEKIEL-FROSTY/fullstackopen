@@ -1,19 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import Note from './components/Note'
 
-
-const App = (props) => {
-  const [notes, setNotes] = useState(props.notes)
+const App = () => {
+  const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
 
-  const handleNoteChange = (event) => {
-    console.log(event.target.value)
-    setNewNote(event.target.value)
-    // target property of the event object now corresponds
-    // to the controlled input element
-    // and event.target.value refers to the input value of the element
-  }
+  useEffect(() => {
+    console.log('effect')
+
+    const eventHandler = response => {
+      console.log('promise fulfilled')
+      setNotes(response.data)
+    }
+
+    const promise = axios.get('http://localhost:3001/notes')
+    promise.then(eventHandler)
+    
+  }, [])
 
   const addNote = (event) => {
     event.preventDefault()
@@ -24,6 +29,14 @@ const App = (props) => {
     }
     setNotes(notes.concat(noteObject))
     setNewNote('')
+  }
+
+  const handleNoteChange = (event) => {
+    console.log(event.target.value)
+    setNewNote(event.target.value)
+    // target property of the event object now corresponds
+    // to the controlled input element
+    // and event.target.value refers to the input value of the element
   }
 
   const notesToShow = showAll ? notes :
