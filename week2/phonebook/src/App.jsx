@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
+import Notification from './component/Notification'
 
 const Person = ( {person, onDelete} ) => {
   return(
@@ -54,6 +55,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [newMessage, setNewMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -77,8 +79,12 @@ const App = () => {
             setPersons(persons.map(person => {
               return person.id !== existingPerson.id ? person : returnedPerson
             }))
-            setNewName('')
-            setNewNumber('')
+          })
+          .catch(error => {
+            setNewMessage(`Information of ${newName} has already been removed from the system`)
+            setTimeout(() => {
+              setNewMessage(null)
+            }, 5000)
           })
       }
     }
@@ -92,6 +98,12 @@ const App = () => {
       .create(newPerson)
       .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
+        setNewMessage(
+          `Added ${newName}`
+        )
+        setTimeout(() => {
+          setNewMessage(null)
+        }, 5000)
         setNewName('')
         setNewNumber('')
       })
@@ -121,6 +133,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message = {newMessage} />
       <Filter value={newFilter} onChange={(event) => setNewFilter(event.target.value)}/>
       
       <h3> add a new </h3>
