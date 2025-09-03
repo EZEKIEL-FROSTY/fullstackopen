@@ -8,25 +8,9 @@ const Note = require('./models/note')
 const app = express()
 
 
-app.use(express.static('dist'))
+//app.use(express.static('dist'))
 
-let notes = [
-    {
-        id : "1",
-        content : "HTML is easy",
-        important : true
-    },
-    {
-        id : "2",
-        content : "Browser can execute only Javascript",
-        important : false
-    },
-    {
-        id : "3",
-        content : "GET and POST are the most important methods of HTTP protocol",
-        important : true
-    }
-]
+let notes = []
 
 const requestLogger = (request, response, next) => {
     console.log('Method:', request.method)
@@ -36,8 +20,10 @@ const requestLogger = (request, response, next) => {
     next()
 }
 
-app.use(express.json())
+
 app.use(requestLogger)
+app.use(express.static('dist'))
+app.use(express.json())
 
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
@@ -52,7 +38,7 @@ app.get('/api/notes', (request, response) => {
 
 // use the : syntax to define parameters for routes in Express
 app.get('/api/notes/:id', (request, response) => {
-    const id = request.params.id
+    /*const id = request.params.id
     const note = notes.find(note => {
         return note.id === id
     })
@@ -62,7 +48,10 @@ app.get('/api/notes/:id', (request, response) => {
     }
     else{
         response.status(404).end()
-    }
+    }*/
+   Note.findById(request.params.id).then(note => {
+    response.json(note)
+   })
 })
 
 app.delete('/api/notes/:id', (request, response) => {
@@ -90,11 +79,11 @@ app.post('/api/notes', (request, response) => {
     const note = {
         content : body.content,
         important : body.important || false,
-        id : generateID(),
     }
 
-    notes = notes.concat(note)
-    response.json(note)
+    note.save().then(savedNote => {
+        response.json(savedNote)
+    })
 })
 
 app.put('/api/notes/:id', (request, response) => {
