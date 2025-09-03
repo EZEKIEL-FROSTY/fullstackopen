@@ -2,8 +2,11 @@
 // import http from 'http' 
 //const http = require('http') //--> imports Node's built in web server module
 
+require('dotenv').config()
 const express = require('express')
+const Note = require('./models/note')
 const app = express()
+
 
 app.use(express.static('dist'))
 
@@ -42,7 +45,9 @@ app.get('/', (request, response) => {
 
 // JSON.stringify(person) --> takes and obj and returns a string version of it
 app.get('/api/notes', (request, response) => {
-    response.json(notes)
+    Note.find({}).then(notes => {
+        response.json(notes)
+    })
 })
 
 // use the : syntax to define parameters for routes in Express
@@ -113,7 +118,7 @@ const unknownEndpoint = (request, response) => {
 }
 app.use(unknownEndpoint)
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
